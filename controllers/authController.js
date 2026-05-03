@@ -8,7 +8,10 @@ const generateToken = (id) => {
 exports.login = async (req, res) => {
   const { email, password, role } = req.body;
   try {
-    const user = await User.findOne({ email, role });
+    const user = await User.findOne({ 
+      email: email.toLowerCase(), 
+      role: { $regex: new RegExp(`^${role}$`, "i") } 
+    });
     if (!user || !(await user.comparePassword(password))) {
       return res.status(401).json({
         success: false,

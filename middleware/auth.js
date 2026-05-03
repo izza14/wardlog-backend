@@ -44,9 +44,10 @@ exports.requireAuth = async (req, res, next) => {
   }
 };
 
-// 2. Require Admin Role
+// Replace the existing role checks with these case-insensitive versions[cite: 7]:
+
 exports.requireAdmin = (req, res, next) => {
-  if (req.user.role !== "Admin") {
+  if (req.user.role.toLowerCase() !== "admin") {
     return res.status(403).json({
       success: false,
       message: "Access denied. Admin permissions required.",
@@ -55,9 +56,9 @@ exports.requireAdmin = (req, res, next) => {
   next();
 };
 
-// 3. Require Doctor Role (Admins usually get doctor access too)
 exports.requireDoctor = (req, res, next) => {
-  if (req.user.role !== "Doctor" && req.user.role !== "Admin") {
+  const role = req.user.role.toLowerCase();
+  if (role !== "doctor" && role !== "admin") {
     return res.status(403).json({
       success: false,
       message: "Access denied. Doctor permissions required.",
@@ -66,9 +67,9 @@ exports.requireDoctor = (req, res, next) => {
   next();
 };
 
-// 4. Require Nurse Role (Admins usually get nurse access too)
 exports.requireNurse = (req, res, next) => {
-  if (req.user.role !== "Nurse" && req.user.role !== "Admin") {
+  const role = req.user.role.toLowerCase();
+  if (role !== "nurse" && role !== "admin") {
     return res.status(403).json({
       success: false,
       message: "Access denied. Nurse permissions required.",

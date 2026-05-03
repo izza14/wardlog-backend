@@ -31,7 +31,7 @@ exports.getPatients = async (req, res) => {
       .populate("assignedDoctor", "name _id")
       .populate("assignedNurse", "name _id")
       .sort({ admissionDate: -1 });
-    res.status(200).json({ success: true, data: patients });
+    res.status(200).json({ success: true, data: patients || [] });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
