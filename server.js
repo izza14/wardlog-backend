@@ -28,22 +28,25 @@ mongoose
   .catch((err) => console.error("MongoDB connection error:", err));
 
 // =========================================================
-// MEMBER 1 ROUTES (Auth + Clinical Documentation Module)
+// ROUTES (Auth + Clinical Documentation Module)
 // =========================================================
 
 // Import Routes
 const authRoutes = require("./routes/authRoutes");
 const patientRoutes = require("./routes/patientRoutes");
-const clinicalRoutes = require("./routes/clinicalRoutes"); // New
-const userRoutes = require("./routes/userRoutes"); // New
+const clinicalRoutes = require("./routes/clinicalRoutes");
+const userRoutes = require("./routes/userRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
+
 // Mount Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/patients", patientRoutes);
 app.use("/api/clinical", clinicalRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // =========================================================
-// MEMBER 2 ROUTES (Ward Coordination Module)
+// (Ward Coordination Module)
 // =========================================================
 app.use("/api/tasks", require("./routes/taskRoutes"));
 app.use("/api/roster", require("./routes/rosterRoutes"));

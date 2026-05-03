@@ -8,11 +8,13 @@ const {
   getERounds,
   createERound,
 } = require("../controllers/clinicalController");
+const { expandNote } = require("../controllers/aiController");
 const { requireAuth } = require("../middleware/auth");
 
 // All clinical routes are protected
 router.use(requireAuth);
 
+router.post("/ai/expand-note", expandNote);
 router.route("/notes").get(getNotes).post(createNote);
 router.route("/lab-orders").get(getLabOrders).post(createLabOrder);
 router.route("/e-rounds").get(getERounds).post(createERound);
