@@ -1,29 +1,36 @@
 const Task = require('../models/Task');
+const Patient = require('../models/Patient'); // Added Patient model
+const Staff = require('../models/Staff');
 
 exports.getWardDashboard = async (req, res, next) => {
   try {
-    const startTime = Date.now();
-
-    const pendingTasksCount = await Task.countDocuments({ status: { $ne: 'Completed' } });
+    // 1. Fetch actual patients for the bed map!
+    const patients = await Patient.find({ ward: { $in: ["Ward A", "Ward B", "Ward C"] } });    
+    // 2. Calculate the exact stats the frontend expects
+    const totalPatients = await Patient.countDocuments();
+    const admittedPatients = patients.length;
     
-    const handoverSummary = {
-        text: "The ward is currently stable. There are no critical emergencies. Morning medication rounds are complete. Please monitor the patient in bed 4 closely for temperature changes.",
-        readabilityScore: 72, 
-        generatedAt: new Date().toISOString()
-    };
-
-    const processingTime = Date.now() - startTime;
-    if (processingTime > 2000) {
-      console.warn(`Dashboard load time exceeded 2 seconds: ${processingTime}ms`);
-    }
+    // Ensure task query is case-insensitive to avoid previous strict-enum bugs
+    const myTasks = await Task.countDocuments({ status: { $ne: 'completed' } });
+    const urgentTasks = await Task.countDocuments({ priority: 'high', status: { $ne: 'completed' } });
+    const activeStaff = await Staff.countDocuments({ status: 'Active' });
 
     res.status(200).json({
       success: true,
       data: {
-        activePatientsCount: 12, 
-        bedOccupancy: '75%',
-        pendingTasks: pendingTasksCount,
-        handoverSummary: handoverSummary
+        // Match the React state keys exactly
+        stats: {
+          totalPatients,
+          admittedPatients,
+          myTasks,
+          urgentTasks,
+          todayShifts: 4, // Placeholder until Roster query is added
+          tomorrowShifts: 3, 
+          activeStaff,
+          department: "General Medicine"
+        },
+        // Send the raw patient array for the WardOccupancy map
+        patients: patients 
       },
       message: 'Ward dashboard loaded successfully'
     });

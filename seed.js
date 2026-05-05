@@ -199,6 +199,7 @@ const seedDatabase = async () => {
         ward: "Ward A",
         bedNumber: "A-101",
         assignedDoctor: doc,
+        condition:"monitoring",
         assignedNurse: nurse1,
         admissionDate: "3/10/2026",
       },
@@ -265,9 +266,106 @@ const seedDatabase = async () => {
         diagnosis: "Blood Test Review",
         patientType: "outpatient",
         status: "outpatient",
+        condition: "monitoring",
         assignedDoctor: doc2,
         assignedNurse: nurse4,
         appointmentDate: "4/29/2026",
+      },
+      // --- NEW WARD B PATIENTS ---
+      {
+        mrn: "MRN001239",
+        firstName: "William",
+        lastName: "Taylor",
+        dob: "2/14/1982",
+        gender: "male",
+        phone: "555-1006",
+        email: "wtaylor@gmail.com",
+        address: "789 Pine Rd",
+        diagnosis: "Asthma Exacerbation",
+        patientType: "inpatient",
+        status: "admitted",
+        ward: "Ward B",
+        bedNumber: "B-102", // Fills Bed 2 in Ward B
+        assignedDoctor: doc,
+        assignedNurse: nurse2,
+        admissionDate: "3/14/2026",
+      },
+      {
+        mrn: "MRN001240",
+        firstName: "Sarah",
+        lastName: "Connor",
+        dob: "8/29/1984",
+        gender: "female",
+        phone: "555-1007",
+        email: "sconnor@gmail.com",
+        address: "404 Skynet Blvd",
+        diagnosis: "Post-Op Recovery",
+        patientType: "inpatient",
+        status: "admitted",
+        ward: "Ward B",
+        bedNumber: "B-105", // Fills Bed 5 in Ward B
+        assignedDoctor: doc2,
+        assignedNurse: nurse3,
+        admissionDate: "3/15/2026",
+      },
+      {
+        mrn: "MRN001241",
+        firstName: "James",
+        lastName: "Miller",
+        dob: "11/05/1975",
+        gender: "male",
+        phone: "555-1008",
+        email: "jmiller@gmail.com",
+        address: "12 Sunset Dr",
+        diagnosis: "Cardiac Monitoring",
+        patientType: "inpatient",
+        condition:"critical",
+        status: "admitted",
+        ward: "Ward B",
+        bedNumber: "B-108", // Fills Bed 8 in Ward B
+        assignedDoctor: doc,
+        assignedNurse: nurse4,
+        admissionDate: "3/16/2026",
+      },
+
+      // --- NEW WARD C PATIENTS ---
+      {
+        mrn: "MRN001242",
+        firstName: "Emma",
+        lastName: "Davis",
+        dob: "9/12/1992",
+        gender: "female",
+        phone: "555-1009",
+        email: "edavis@gmail.com",
+        address: "88 River View",
+        diagnosis: "Appendectomy",
+        patientType: "inpatient",
+        status: "admitted",
+        ward: "Ward C",
+        bedNumber: "C-103", // Fills Bed 3 in Ward C
+        assignedDoctor: doc2,
+
+        assignedNurse: nurse1,
+        admissionDate: "3/15/2026",
+      },
+      {
+        mrn: "MRN001243",
+        firstName: "David",
+        lastName: "Wilson",
+        dob: "1/30/1965",
+        gender: "male",
+        phone: "555-1010",
+        condition: "monitoring",
+        email: "dwilson@gmail.com",
+        address: "55 Mountain Path",
+        diagnosis: "Pneumonia",
+        patientType: "inpatient",
+        status: "admitted",
+        ward: "Ward C",
+        bedNumber: "C-109", // Fills Bed 9 in Ward C
+        assignedDoctor: doc,
+        assignedNurse: nurse2,
+        admissionDate: "3/16/2026",
       },
     ]);
     console.log(`Seeded ${patients.length} patients`);
@@ -402,27 +500,27 @@ const seedDatabase = async () => {
       },
     ]);
     // ── Roster ──
-    await Roster.create([
+  await Roster.create([
       {
         date: "Thursday, March 12, 2026",
-        morning: [
-          { staffName: "Emily Chen", role: "Nurse", ward: "Ward A" },
-          { staffName: "Jessica Wilson", role: "Nurse", ward: "Ward B" },
-        ],
-        afternoon: [
-          { staffName: "Michael Brown", role: "Nurse", ward: "Ward C" },
-        ],
-        night: [{ staffName: "James Wilson", role: "Nurse", ward: "Ward B" }],
+        shifts: [
+          { shift: "Morning", staffName: "Emily Chen", role: "Nurse", ward: "Ward A" },
+          { shift: "Morning", staffName: "Jessica Wilson", role: "Nurse", ward: "Ward B" },
+          { shift: "Evening", staffName: "Michael Brown", role: "Nurse", ward: "Ward C" },
+          { shift: "Night", staffName: "James Wilson", role: "Nurse", ward: "Ward B" }
+        ]
       },
       {
         date: "Friday, March 13, 2026",
-        morning: [
-          { staffName: "Dr. Sarah Johnson", role: "Doctor", ward: "Ward A" },
-        ],
-        afternoon: [{ staffName: "Emily Chen", role: "Nurse", ward: "Ward A" }],
-        night: [{ staffName: "Jessica Wilson", role: "Nurse", ward: "Ward B" }],
-      },
+        shifts: [
+          { shift: "Morning", staffName: "Dr. Sarah Johnson", role: "Doctor", ward: "Ward A" },
+          { shift: "Evening", staffName: "Emily Chen", role: "Nurse", ward: "Ward A" },
+          { shift: "Night", staffName: "Jessica Wilson", role: "Nurse", ward: "Ward B" }
+        ]
+      }
     ]);
+
+    
     // ── Swap Requests ──
 
     // 1. Fetch Users to get their IDs
@@ -435,24 +533,28 @@ const seedDatabase = async () => {
     const rosterDoc = await Roster.findOne({
       date: "Thursday, March 12, 2026",
     });
+
+    const emilyShift = rosterDoc.shifts.find(s => s.staffName === "Emily Chen");
+    const jamesShift = rosterDoc.shifts.find(s => s.staffName === "James Wilson");
+
     await SwapRequest.create([
       {
         requester: emilyDoc._id,
         requesterRole: "Nurse",
-        shift: rosterDoc._id,
+        shift: emilyShift._id,
         swapWith: jessicaDoc._id,
         requestedDate: "3/14/2026",
         reason: "Family emergency",
-        status: "pending",
+        status: "Pending",
       },
       {
         requester: jamesDoc._id,
         requesterRole: "Nurse",
-        shift: rosterDoc._id,
+        shift: jamesShift._id,
         swapWith: michaelDoc._id,
         requestedDate: "3/13/2026",
         reason: "Doctor appointment",
-        status: "pending",
+        status: "Pending",
       },
     ]);
     console.log("seeding complete");
