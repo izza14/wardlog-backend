@@ -18,7 +18,6 @@ router.use(requireAuth);
 
 // Only Admins can create a new patient record
 router.post("/", requireAdmin, createPatient);
-
 router.get("/", getPatients);
 router.get("/:mrn", getPatientByMrn);
 router.put("/:mrn", updatePatient);

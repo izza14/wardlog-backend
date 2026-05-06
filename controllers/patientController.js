@@ -235,38 +235,3 @@ exports.deletePatient = async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 };
-
-exports.deletePatient = async (req, res) => {
-  try {
-    const patient = await Patient.findOneAndDelete({ mrn: req.params.mrn });
-    if (!patient)
-      return res
-        .status(404)
-        .json({ success: false, message: "Patient not found" });
-    res
-      .status(200)
-      .json({ success: true, message: "Patient deleted successfully" });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-};
-
-// Delete Patient (Admin only)
-exports.deletePatient = async (req, res) => {
-  try {
-    // Find the patient by MRN and delete them
-    const patient = await Patient.findOneAndDelete({ mrn: req.params.mrn });
-
-    if (!patient) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Patient not found" });
-    }
-
-    res
-      .status(200)
-      .json({ success: true, message: "Patient deleted successfully" });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-};
