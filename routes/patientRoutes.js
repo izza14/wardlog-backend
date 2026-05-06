@@ -24,4 +24,5 @@ router.get("/:mrn", getPatientByMrn);
 router.put("/:mrn", updatePatient);
 router.delete("/:mrn", requireAdmin, deletePatient);
 router.patch("/:mrn/status", requireDoctor, updateStatus);
+router.delete("/:mrn", requireAdmin, deletePatient);
 module.exports = router;
