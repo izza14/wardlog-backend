@@ -27,6 +27,12 @@ const patientSchema = new mongoose.Schema(
       enum: ["inpatient", "outpatient"],
       required: true,
     },
+    // Add this to the patientSchema in Patient.js
+    condition: {
+      type: String,
+      enum: ["Stable", "Monitoring", "Critical"],
+      default: "Stable",
+    },
 
     ward: { type: String },
     bedNumber: { type: String },

@@ -51,22 +51,27 @@ exports.createTask = async (req, res, next) => {
 };
 
 // 3. PUT /api/tasks/:id/complete - Mark task complete (Nurse/Doctor)[cite: 1]
+// 3. PUT /api/tasks/:id/complete - Mark as complete (Nurse/Doctor)
 exports.completeTask = async (req, res, next) => {
   try {
     const task = await Task.findById(req.params.id);
+
     if (!task) {
       return res.status(404).json({ success: false, data: null, message: 'Task not found' });
     }
 
-    task.status = 'Completed';
-    // SRS Requirement: Maintain history for status updates[cite: 2]
+    // THE FIX: Must be exactly "completed" (lowercase) to match the Task.js enum
+    task.status = 'completed'; 
+    
+    // SRS Requirement: Maintain history for status updates
     task.history.push({ 
-      status: 'Completed', 
+      status: 'completed', // THE FIX: lowercase here too
       updatedBy: req.user.id, 
       timestamp: new Date() 
     });
     
     await task.save();
+    
     res.status(200).json({ 
       success: true, 
       data: task, 
