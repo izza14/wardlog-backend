@@ -199,7 +199,7 @@ const seedDatabase = async () => {
         ward: "Ward A",
         bedNumber: "A-101",
         assignedDoctor: doc,
-        condition:"monitoring",
+        condition: "monitoring",
         assignedNurse: nurse1,
         admissionDate: "3/10/2026",
       },
@@ -319,7 +319,7 @@ const seedDatabase = async () => {
         address: "12 Sunset Dr",
         diagnosis: "Cardiac Monitoring",
         patientType: "inpatient",
-        condition:"critical",
+        condition: "critical",
         status: "admitted",
         ward: "Ward B",
         bedNumber: "B-108", // Fills Bed 8 in Ward B
@@ -500,27 +500,61 @@ const seedDatabase = async () => {
       },
     ]);
     // ── Roster ──
-  await Roster.create([
+    await Roster.create([
       {
         date: "Thursday, March 12, 2026",
         shifts: [
-          { shift: "Morning", staffName: "Emily Chen", role: "Nurse", ward: "Ward A" },
-          { shift: "Morning", staffName: "Jessica Wilson", role: "Nurse", ward: "Ward B" },
-          { shift: "Evening", staffName: "Michael Brown", role: "Nurse", ward: "Ward C" },
-          { shift: "Night", staffName: "James Wilson", role: "Nurse", ward: "Ward B" }
-        ]
+          {
+            shift: "Morning",
+            staffName: "Emily Chen",
+            role: "Nurse",
+            ward: "Ward A",
+          },
+          {
+            shift: "Morning",
+            staffName: "Jessica Wilson",
+            role: "Nurse",
+            ward: "Ward B",
+          },
+          {
+            shift: "Evening",
+            staffName: "Michael Brown",
+            role: "Nurse",
+            ward: "Ward C",
+          },
+          {
+            shift: "Night",
+            staffName: "James Wilson",
+            role: "Nurse",
+            ward: "Ward B",
+          },
+        ],
       },
       {
         date: "Friday, March 13, 2026",
         shifts: [
-          { shift: "Morning", staffName: "Dr. Sarah Johnson", role: "Doctor", ward: "Ward A" },
-          { shift: "Evening", staffName: "Emily Chen", role: "Nurse", ward: "Ward A" },
-          { shift: "Night", staffName: "Jessica Wilson", role: "Nurse", ward: "Ward B" }
-        ]
-      }
+          {
+            shift: "Morning",
+            staffName: "Dr. Sarah Johnson",
+            role: "Doctor",
+            ward: "Ward A",
+          },
+          {
+            shift: "Evening",
+            staffName: "Emily Chen",
+            role: "Nurse",
+            ward: "Ward A",
+          },
+          {
+            shift: "Night",
+            staffName: "Jessica Wilson",
+            role: "Nurse",
+            ward: "Ward B",
+          },
+        ],
+      },
     ]);
 
-    
     // ── Swap Requests ──
 
     // 1. Fetch Users to get their IDs
@@ -529,32 +563,40 @@ const seedDatabase = async () => {
     const michaelDoc = await User.findOne({ name: "Michael Brown" });
     const jamesDoc = await User.findOne({ name: "James Wilson" });
 
+    const emilyStaff = await Staff.findOne({ name: "Emily Chen" });
+    const jessicaStaff = await Staff.findOne({ name: "Jessica Wilson" });
+    const michaelStaff = await Staff.findOne({ name: "Michael Brown" });
+    const jamesStaff = await Staff.findOne({ name: "James Wilson" });
     // 2. Fetch the Roster/Shift to link the swap (Optional, or use a dummy ID)
     const rosterDoc = await Roster.findOne({
       date: "Thursday, March 12, 2026",
     });
 
-    const emilyShift = rosterDoc.shifts.find(s => s.staffName === "Emily Chen");
-    const jamesShift = rosterDoc.shifts.find(s => s.staffName === "James Wilson");
+    const emilyShift = rosterDoc.shifts.find(
+      (s) => s.staffName === "Emily Chen",
+    );
+    const jamesShift = rosterDoc.shifts.find(
+      (s) => s.staffName === "James Wilson",
+    );
 
     await SwapRequest.create([
       {
         requester: emilyDoc._id,
         requesterRole: "Nurse",
         shift: emilyShift._id,
-        swapWith: jessicaDoc._id,
+        swapWith: jessicaStaff._id,
         requestedDate: "3/14/2026",
         reason: "Family emergency",
-        status: "Pending",
+        status: "pending",
       },
       {
         requester: jamesDoc._id,
         requesterRole: "Nurse",
         shift: jamesShift._id,
-        swapWith: michaelDoc._id,
+        swapWith: michaelStaff._id,
         requestedDate: "3/13/2026",
         reason: "Doctor appointment",
-        status: "Pending",
+        status: "pending",
       },
     ]);
     console.log("seeding complete");

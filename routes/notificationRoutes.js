@@ -6,6 +6,7 @@ const {
   markAsRead,
   markAllAsRead,
   clearAll,
+  notifyMany,
 } = require("../controllers/notificationController");
 
 router.get("/", requireAuth, getNotifications);
@@ -13,5 +14,5 @@ router.get("/unread-count", requireAuth, getUnreadCount);
 router.patch("/:id/read", requireAuth, markAsRead);
 router.patch("/read-all", requireAuth, markAllAsRead);
 router.delete("/", requireAuth, clearAll);
-
+router.post("/many", requireAuth, notifyMany);
 module.exports = router;

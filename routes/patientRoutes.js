@@ -5,7 +5,8 @@ const {
   getPatientByMrn,
   updatePatient,
   updateStatus,
-  createPatient, // Ensure this is imported from your controller
+  createPatient,
+  deletePatient,
 } = require("../controllers/patientController");
 const {
   requireAuth,
@@ -21,5 +22,6 @@ router.post("/", requireAdmin, createPatient);
 router.get("/", getPatients);
 router.get("/:mrn", getPatientByMrn);
 router.put("/:mrn", updatePatient);
+router.delete("/:mrn", requireAdmin, deletePatient);
 router.patch("/:mrn/status", requireDoctor, updateStatus);
 module.exports = router;
