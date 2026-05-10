@@ -8,10 +8,22 @@ const app = express();
 // Middleware
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://wardlog-frontend.vercel.app", // Update with your actual Vercel URL
-    ],
+    origin: function (origin, callback) {
+      const allowed = [
+        "http://localhost:5173",
+        "https://wardlog-frontend.vercel.app",
+      ];
+      // Allow any Vercel preview URL for your project
+      if (
+        !origin ||
+        allowed.includes(origin) ||
+        origin.endsWith(".vercel.app")
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   }),
 );
