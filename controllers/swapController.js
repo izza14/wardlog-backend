@@ -1,6 +1,6 @@
 const SwapRequest = require("../models/SwapRequest");
 const Roster = require("../models/Roster");
-const { createNotification } = require("./NotificationController");
+const { createNotification } = require("./notificationController");
 const User = require("../models/User");
 // POST /api/swap-requests (Staff submit requests)
 exports.createSwapRequest = async (req, res, next) => {
