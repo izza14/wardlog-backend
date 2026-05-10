@@ -10,7 +10,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://wardlog.vercel.app", // Update with your actual Vercel URL
+      "https://wardlog-frontend.vercel.app", // Update with your actual Vercel URL
     ],
     credentials: true,
   }),
