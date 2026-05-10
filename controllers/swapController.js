@@ -13,6 +13,20 @@ exports.createSwapRequest = async (req, res, next) => {
       requestedDate,
       reason,
     });
+
+    // ── Notify all admins about the new swap request ──
+    const requesterUser = await User.findById(req.user.id).select("name");
+    const admins = await User.find({ role: "admin" }).select("_id");
+
+    for (const admin of admins) {
+      await createNotification({
+        recipientId: admin._id,
+        type: "swap_request",
+        title: "New Swap Request",
+        message: `${requesterUser?.name || "A staff member"} has submitted a new shift swap request and is awaiting your approval.`,
+      });
+    }
+
     res.status(201).json({
       success: true,
       data: newRequest,
@@ -74,7 +88,7 @@ exports.approveSwap = async (req, res, next) => {
       await createNotification({
         recipientId: request.requester._id,
         type: "swap_request",
-        title: "Swap Approved ✅",
+        title: "Swap Request Approved",
         message: `Your shift swap request with ${request.swapWith?.name || "a colleague"} has been approved by admin.`,
       });
     }
@@ -84,7 +98,7 @@ exports.approveSwap = async (req, res, next) => {
       await createNotification({
         recipientId: swapWithUser._id,
         type: "swap_request",
-        title: "Shift Swap Approved ✅",
+        title: "Shift Swap Approved",
         message: `Admin has approved your shift swap. ${request.requester?.name || "A colleague"} is covering your shift.`,
       });
     }
@@ -120,7 +134,7 @@ exports.rejectSwap = async (req, res, next) => {
       await createNotification({
         recipientId: request.requester._id,
         type: "swap_request",
-        title: "Swap Rejected ❌",
+        title: "Swap Request Rejected",
         message: `Your shift swap request with ${request.swapWith?.name || "a colleague"} was declined by admin.`,
       });
     }
@@ -132,7 +146,7 @@ exports.rejectSwap = async (req, res, next) => {
       await createNotification({
         recipientId: request.swapWith._id,
         type: "swap_request",
-        title: "Shift Swap Rejected ❌",
+        title: "Shift Swap Rejected",
         message: `The proposed shift swap with ${request.requester?.name || "a colleague"} was declined by admin.`,
       });
     }
