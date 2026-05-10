@@ -8,10 +8,7 @@ const app = express();
 // Middleware
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://wardlog-frontend.vercel.app", // Update with your actual Vercel URL
-    ],
+    origin: true, // Allow all origins (for development). In production, specify your frontend URL.
     credentials: true,
   }),
 );
